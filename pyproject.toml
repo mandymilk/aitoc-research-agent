@@ -1,0 +1,13 @@
+[project]
+name = "aitoc-research-agent"
+version = "0.6.2"
+description = "A research-agent repository for studying AI-to-C business models."
+requires-python = ">=3.10"
+dependencies = []
+
+[project.scripts]
+aitoc-research = "aitoc_research_agent.cli:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"

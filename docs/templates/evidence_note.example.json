@@ -1,0 +1,14 @@
+{
+  "id": "evidence-example-001",
+  "source_url": "https://example.com/pricing",
+  "retrieval_method": "browser",
+  "source_title": "Example AI Product Pricing",
+  "publisher": "Example Company",
+  "published_date": "2026-01-01",
+  "accessed_date": "2026-06-09",
+  "claim": "Example AI Product offers a paid plan at $20/month.",
+  "claim_type": "pricing",
+  "confidence": "medium",
+  "counterevidence": "",
+  "research_implication": "Supports classification as freemium subscription."
+}

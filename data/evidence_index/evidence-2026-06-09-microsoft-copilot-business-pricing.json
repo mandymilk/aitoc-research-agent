@@ -1,0 +1,15 @@
+{
+  "id": "evidence-2026-06-09-microsoft-copilot-business-pricing",
+  "source_url": "https://www.microsoft.com/en-us/microsoft-365-copilot/pricing",
+  "retrieval_method": "browser",
+  "source_title": "Microsoft 365 Copilot Plans and Pricing",
+  "publisher": "Microsoft",
+  "published_date": "",
+  "accessed_date": "2026-06-09",
+  "claim": "Microsoft's Copilot pricing page presents Copilot plans for organizations and says Copilot Chat is included for eligible Microsoft 365 subscription users, while agents require Azure subscription or Copilot Studio capacity.",
+  "claim_type": "pricing",
+  "confidence": "high",
+  "counterevidence": "",
+  "research_implication": "Supports analysis of Copilot as a business/enterprise bundle with AI chat included and agent usage linked to additional capacity."
+}
+

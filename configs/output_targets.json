@@ -1,0 +1,40 @@
+{
+  "kindle": {
+    "enabled": true,
+    "default_format": "html",
+    "output_dir": "outputs/kindle",
+    "delivery": {
+      "enabled": true,
+      "method": "smtp_email",
+      "required_env": [
+        "KINDLE_TO_EMAIL",
+        "KINDLE_SMTP_HOST",
+        "KINDLE_SMTP_USERNAME",
+        "KINDLE_SMTP_PASSWORD"
+      ],
+      "optional_env": [
+        "KINDLE_FROM_EMAIL",
+        "KINDLE_SMTP_PORT"
+      ]
+    },
+    "style": {
+      "font_family": "serif",
+      "max_width": "720px",
+      "line_height": "1.55"
+    },
+    "notes": "HTML is the v0 target because it can be produced without external dependencies. Delivery uses SMTP email to the user's Send-to-Kindle address."
+  },
+  "notion": {
+    "enabled": true,
+    "default_format": "markdown",
+    "output_dir": "outputs/notion",
+    "api": {
+      "enabled": true,
+      "env_var": "NOTION_API_KEY",
+      "database_id_env_var": "NOTION_DATABASE_ID",
+      "page_id_env_var": "NOTION_PAGE_ID",
+      "notion_version": "2026-03-11"
+    },
+    "notes": "Markdown remains the local export target. API publishing creates a Notion page under NOTION_PAGE_ID or NOTION_DATABASE_ID."
+  }
+}

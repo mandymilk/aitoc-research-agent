@@ -1,0 +1,184 @@
+[
+  {
+    "id": "official_web",
+    "name": "Official web pages",
+    "source_type": "web",
+    "requires_api_key": false,
+    "env_var": null,
+    "rate_limit": "runtime dependent",
+    "cost_risk": "none",
+    "supports_claims": [
+      "pricing",
+      "packaging",
+      "usage_limit",
+      "strategy",
+      "distribution"
+    ],
+    "outputs": [
+      "raw_html_or_text",
+      "evidence_note"
+    ],
+    "fallbacks": [
+      "manual_capture",
+      "credible_news"
+    ],
+    "notes": "Preferred source for current pricing, packaging, and official product claims."
+  },
+  {
+    "id": "web_search",
+    "name": "Web search",
+    "source_type": "api_or_runtime_tool",
+    "requires_api_key": "optional",
+    "env_var": "WEB_SEARCH_API_KEY",
+    "rate_limit": "provider dependent",
+    "cost_risk": "low",
+    "supports_claims": [
+      "discovery",
+      "competition",
+      "strategy"
+    ],
+    "outputs": [
+      "search_results",
+      "candidate_sources"
+    ],
+    "fallbacks": [
+      "manual_source_list"
+    ],
+    "notes": "Used for discovery, not as final evidence unless result pages are opened and evaluated."
+  },
+  {
+    "id": "news_monitor",
+    "name": "News monitoring provider",
+    "source_type": "api",
+    "requires_api_key": true,
+    "env_var": "NEWS_API_KEY",
+    "rate_limit": "provider dependent",
+    "cost_risk": "low",
+    "supports_claims": [
+      "strategy",
+      "funding",
+      "shutdown",
+      "acquisition",
+      "competition"
+    ],
+    "outputs": [
+      "article_results",
+      "candidate_trend_signals"
+    ],
+    "fallbacks": [
+      "web_search"
+    ],
+    "notes": "Useful for daily and weekly trend discovery."
+  },
+  {
+    "id": "app_intelligence",
+    "name": "App intelligence provider",
+    "source_type": "api",
+    "requires_api_key": true,
+    "env_var": "APP_INTELLIGENCE_API_KEY",
+    "rate_limit": "provider dependent",
+    "cost_risk": "medium",
+    "supports_claims": [
+      "app_rank",
+      "download_estimate",
+      "revenue_estimate",
+      "retention",
+      "competition"
+    ],
+    "outputs": [
+      "app_metrics_payload",
+      "evidence_note"
+    ],
+    "fallbacks": [
+      "app_store_web",
+      "credible_news",
+      "manual_capture"
+    ],
+    "notes": "Important for consumer AI because app-store behavior can reveal adoption before companies disclose numbers."
+  },
+  {
+    "id": "filing_data",
+    "name": "Public filings and investor data",
+    "source_type": "api_or_web",
+    "requires_api_key": "optional",
+    "env_var": "FILING_API_KEY",
+    "rate_limit": "provider dependent",
+    "cost_risk": "low",
+    "supports_claims": [
+      "revenue",
+      "strategy",
+      "cost",
+      "distribution"
+    ],
+    "outputs": [
+      "filing_text",
+      "evidence_note"
+    ],
+    "fallbacks": [
+      "investor_relations_web"
+    ],
+    "notes": "Best for public-company claims. Less useful for private consumer AI startups."
+  },
+  {
+    "id": "page_monitor",
+    "name": "Pricing and page-change monitor",
+    "source_type": "api_or_local_job",
+    "requires_api_key": "optional",
+    "env_var": "PAGE_MONITOR_API_KEY",
+    "rate_limit": "provider dependent",
+    "cost_risk": "low",
+    "supports_claims": [
+      "pricing",
+      "packaging",
+      "usage_limit"
+    ],
+    "outputs": [
+      "page_snapshot",
+      "diff",
+      "candidate_trend_signal"
+    ],
+    "fallbacks": [
+      "official_web"
+    ],
+    "notes": "Useful for detecting silent pricing and free-tier changes."
+  },
+  {
+    "id": "manual_capture",
+    "name": "Manual source capture",
+    "source_type": "manual",
+    "requires_api_key": false,
+    "env_var": null,
+    "rate_limit": "none",
+    "cost_risk": "none",
+    "supports_claims": [
+      "pricing",
+      "packaging",
+      "usage_limit",
+      "user_behavior"
+    ],
+    "outputs": [
+      "screenshot",
+      "collector_note",
+      "evidence_note"
+    ],
+    "fallbacks": [],
+    "notes": "Use for mobile-only pricing screens, region-locked pages, and paywalled data supplied by the researcher."
+  },
+  {
+    "id": "notion_publish",
+    "name": "Notion publishing",
+    "source_type": "api",
+    "requires_api_key": true,
+    "env_var": "NOTION_API_KEY",
+    "rate_limit": "provider dependent",
+    "cost_risk": "low",
+    "supports_claims": [],
+    "outputs": [
+      "notion_page"
+    ],
+    "fallbacks": [
+      "notion_markdown_import"
+    ],
+    "notes": "Optional publishing connector. It should publish only already-source-backed research outputs, not create evidence."
+  }
+]

@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ProductProfile",
+  "type": "object",
+  "required": [
+    "product_name",
+    "company",
+    "geography",
+    "category",
+    "user_jobs",
+    "pricing_model",
+    "free_tier",
+    "paid_tiers",
+    "distribution_channels",
+    "compute_intensity",
+    "retention_assessment",
+    "strategic_subsidy_sources",
+    "survival_classification",
+    "confidence",
+    "evidence_ids",
+    "open_questions"
+  ],
+  "properties": {
+    "product_name": { "type": "string" },
+    "company": { "type": "string" },
+    "geography": { "type": "array", "items": { "type": "string" } },
+    "category": { "type": "string" },
+    "user_jobs": { "type": "array", "items": { "type": "string" } },
+    "pricing_model": { "type": "array", "items": { "type": "string" } },
+    "free_tier": {
+      "type": "object",
+      "required": ["exists", "limits"],
+      "properties": {
+        "exists": { "type": ["boolean", "null"] },
+        "limits": { "type": "array", "items": { "type": "string" } }
+      },
+      "additionalProperties": false
+    },
+    "paid_tiers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "price", "billing_period", "features", "usage_limits"],
+        "properties": {
+          "name": { "type": "string" },
+          "price": { "type": "string" },
+          "billing_period": { "type": "string" },
+          "features": { "type": "array", "items": { "type": "string" } },
+          "usage_limits": { "type": "array", "items": { "type": "string" } }
+        },
+        "additionalProperties": false
+      }
+    },
+    "distribution_channels": { "type": "array", "items": { "type": "string" } },
+    "compute_intensity": { "type": "string" },
+    "retention_assessment": { "type": "string" },
+    "strategic_subsidy_sources": { "type": "array", "items": { "type": "string" } },
+    "survival_classification": {
+      "type": "string",
+      "enum": [
+        "standalone_viable",
+        "hybrid_viable",
+        "strategic_subsidy",
+        "not_yet_viable",
+        "unknown"
+      ]
+    },
+    "confidence": {
+      "type": "string",
+      "enum": ["low", "medium", "high"]
+    },
+    "evidence_ids": { "type": "array", "items": { "type": "string" } },
+    "open_questions": { "type": "array", "items": { "type": "string" } }
+  },
+  "additionalProperties": false
+}
+

@@ -1,0 +1,48 @@
+{
+  "product_name": "Doubao",
+  "company": "ByteDance",
+  "geography": ["China"],
+  "category": "general_assistant",
+  "user_jobs": ["general AI assistant", "content creation", "daily Q&A"],
+  "pricing_model": ["free tier", "reported tiered subscription"],
+  "free_tier": {
+    "exists": true,
+    "limits": ["Reported basic free availability; exact limits require official verification."]
+  },
+  "paid_tiers": [
+    {
+      "name": "Standard",
+      "price": "reported RMB 68/month",
+      "billing_period": "monthly",
+      "features": ["unknown"],
+      "usage_limits": ["unknown"]
+    },
+    {
+      "name": "Enhanced",
+      "price": "reported RMB 200/month",
+      "billing_period": "monthly",
+      "features": ["unknown"],
+      "usage_limits": ["unknown"]
+    },
+    {
+      "name": "Professional",
+      "price": "reported RMB 500/month",
+      "billing_period": "monthly",
+      "features": ["unknown"],
+      "usage_limits": ["unknown"]
+    }
+  ],
+  "distribution_channels": ["mobile app", "ByteDance ecosystem"],
+  "compute_intensity": "unknown",
+  "retention_assessment": "unknown",
+  "strategic_subsidy_sources": ["ByteDance consumer distribution", "ByteDance AI/model infrastructure"],
+  "survival_classification": "unknown",
+  "confidence": "low",
+  "evidence_ids": ["evidence-2026-06-09-doubao-paid-tiers-secondary"],
+  "open_questions": [
+    "Capture official Doubao App Store or product-page pricing.",
+    "Identify features and usage limits for each tier.",
+    "Estimate paid conversion and retention after tier launch."
+  ]
+}
+

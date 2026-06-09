@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "EvidenceItem",
+  "type": "object",
+  "required": [
+    "id",
+    "source_url",
+    "retrieval_method",
+    "source_title",
+    "publisher",
+    "accessed_date",
+    "claim",
+    "claim_type",
+    "confidence",
+    "research_implication"
+  ],
+  "properties": {
+    "id": { "type": "string", "minLength": 1 },
+    "source_url": { "type": "string", "format": "uri" },
+    "retrieval_method": {
+      "type": "string",
+      "enum": ["api", "browser", "search", "manual", "local"]
+    },
+    "source_title": { "type": "string", "minLength": 1 },
+    "publisher": { "type": "string" },
+    "published_date": { "type": "string" },
+    "accessed_date": { "type": "string" },
+    "claim": { "type": "string", "minLength": 1 },
+    "claim_type": {
+      "type": "string",
+      "enum": [
+        "acquisition",
+        "app_rank",
+        "competition",
+        "cost",
+        "discovery",
+        "distribution",
+        "download_estimate",
+        "funding",
+        "packaging",
+        "pricing",
+        "retention",
+        "revenue",
+        "revenue_estimate",
+        "shutdown",
+        "strategy",
+        "traffic_estimate",
+        "usage_limit",
+        "user_behavior"
+      ]
+    },
+    "confidence": {
+      "type": "string",
+      "enum": ["low", "medium", "high"]
+    },
+    "counterevidence": { "type": "string" },
+    "research_implication": { "type": "string", "minLength": 1 }
+  },
+  "additionalProperties": false
+}

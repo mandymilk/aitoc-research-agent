@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "TrendSignal",
+  "type": "object",
+  "required": [
+    "id",
+    "date_observed",
+    "title",
+    "category",
+    "score",
+    "summary",
+    "business_model_implication",
+    "products_or_companies",
+    "evidence_ids",
+    "promotion_decision"
+  ],
+  "properties": {
+    "id": { "type": "string" },
+    "date_observed": { "type": "string" },
+    "title": { "type": "string" },
+    "category": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "pricing_change",
+          "usage_limit_change",
+          "monetization_experiment",
+          "distribution_shift",
+          "retention_signal",
+          "cost_signal",
+          "product_behavior_shift",
+          "company_strategy",
+          "regional_market_signal"
+        ]
+      }
+    },
+    "score": { "type": "integer", "minimum": 1, "maximum": 5 },
+    "summary": { "type": "string" },
+    "business_model_implication": { "type": "string" },
+    "products_or_companies": { "type": "array", "items": { "type": "string" } },
+    "evidence_ids": { "type": "array", "items": { "type": "string" } },
+    "promotion_decision": {
+      "type": "string",
+      "enum": [
+        "keep_as_signal",
+        "promote_to_research_idea",
+        "promote_to_case_study_candidate",
+        "ignore_after_review"
+      ]
+    }
+  },
+  "additionalProperties": false
+}
+

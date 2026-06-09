@@ -1,0 +1,63 @@
+[
+  {
+    "product": "Microsoft Copilot",
+    "company": "Microsoft",
+    "owner_type": "large_platform",
+    "category": "productivity_assistant",
+    "geography": ["global", "US"],
+    "reason_to_study": "Tests bundling and consumer/business convergence.",
+    "bias_role": "platform_anchor",
+    "status": "seed"
+  },
+  {
+    "product": "Doubao",
+    "company": "ByteDance",
+    "owner_type": "large_platform",
+    "category": "general_assistant",
+    "geography": ["China"],
+    "reason_to_study": "Tests China-scale consumer AI and tiered usage plans.",
+    "bias_role": "platform_anchor",
+    "status": "seed"
+  },
+  {
+    "product": "Perplexity",
+    "company": "Perplexity AI",
+    "owner_type": "standalone_challenger",
+    "category": "ai_search",
+    "geography": ["global", "US"],
+    "reason_to_study": "Tests standalone AI search monetization through subscription, ads, and partnerships.",
+    "bias_role": "challenger",
+    "status": "candidate"
+  },
+  {
+    "product": "Character.AI",
+    "company": "Character Technologies",
+    "owner_type": "standalone_or_hybrid_challenger",
+    "category": "ai_companion",
+    "geography": ["global", "US"],
+    "reason_to_study": "Tests retention-heavy companion economics and monetization under safety constraints.",
+    "bias_role": "challenger",
+    "status": "candidate"
+  },
+  {
+    "product": "Replika",
+    "company": "Luka",
+    "owner_type": "standalone_challenger",
+    "category": "ai_companion",
+    "geography": ["global", "US"],
+    "reason_to_study": "Tests willingness to pay and retention in emotional AI companion use cases.",
+    "bias_role": "challenger",
+    "status": "candidate"
+  },
+  {
+    "product": "Canva AI",
+    "company": "Canva",
+    "owner_type": "scaled_independent_bundle",
+    "category": "creative_productivity",
+    "geography": ["global"],
+    "reason_to_study": "Tests AI bundled into a consumer/prosumer creative subscription.",
+    "bias_role": "non_platform_scaled",
+    "status": "candidate"
+  }
+]
+

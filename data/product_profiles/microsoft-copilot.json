@@ -1,0 +1,44 @@
+{
+  "product_name": "Microsoft Copilot",
+  "company": "Microsoft",
+  "geography": ["global", "US"],
+  "category": "productivity_assistant",
+  "user_jobs": ["general AI assistant", "productivity support", "workplace AI chat", "agent-assisted work"],
+  "pricing_model": ["free tier", "bundled subscription", "business add-on", "capacity-linked agents"],
+  "free_tier": {
+    "exists": true,
+    "limits": ["Exact limits require separate current verification."]
+  },
+  "paid_tiers": [
+    {
+      "name": "Microsoft 365 individual subscriptions with Copilot",
+      "price": "unknown",
+      "billing_period": "unknown",
+      "features": ["Copilot access in eligible individual Microsoft 365 plans"],
+      "usage_limits": ["Usage limits apply; exact credit amounts require current verification."]
+    },
+    {
+      "name": "Microsoft 365 Copilot for business",
+      "price": "unknown",
+      "billing_period": "unknown",
+      "features": ["Copilot Chat", "work-data grounded chat", "agents and advanced Microsoft 365 app features depending on license"],
+      "usage_limits": ["Agent use may require Azure subscription or Copilot Studio capacity."]
+    }
+  ],
+  "distribution_channels": ["Microsoft 365", "Windows", "Edge", "web", "mobile apps", "enterprise admin channels"],
+  "compute_intensity": "unknown",
+  "retention_assessment": "unknown",
+  "strategic_subsidy_sources": ["Microsoft 365 subscriptions", "enterprise ecosystem", "Azure and agent capacity"],
+  "survival_classification": "strategic_subsidy",
+  "confidence": "low",
+  "evidence_ids": [
+    "evidence-2026-06-09-microsoft-copilot-experiences",
+    "evidence-2026-06-09-microsoft-copilot-business-pricing"
+  ],
+  "open_questions": [
+    "What is current consumer Copilot paid conversion?",
+    "How much AI usage is included by plan?",
+    "What is the gross-margin impact of Copilot usage by user segment?"
+  ]
+}
+

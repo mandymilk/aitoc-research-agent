@@ -1,0 +1,30 @@
+{
+  "product_name": "",
+  "company": "",
+  "geography": [],
+  "category": "",
+  "user_jobs": [],
+  "pricing_model": [],
+  "free_tier": {
+    "exists": null,
+    "limits": []
+  },
+  "paid_tiers": [
+    {
+      "name": "",
+      "price": "",
+      "billing_period": "",
+      "features": [],
+      "usage_limits": []
+    }
+  ],
+  "distribution_channels": [],
+  "compute_intensity": "unknown",
+  "retention_assessment": "unknown",
+  "strategic_subsidy_sources": [],
+  "survival_classification": "unknown",
+  "confidence": "low",
+  "evidence_ids": [],
+  "open_questions": []
+}
+

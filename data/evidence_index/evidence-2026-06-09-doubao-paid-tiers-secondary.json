@@ -1,0 +1,15 @@
+{
+  "id": "evidence-2026-06-09-doubao-paid-tiers-secondary",
+  "source_url": "https://chaobro.com/posts/doubao-paid-subscription-tiers-2026/",
+  "retrieval_method": "browser",
+  "source_title": "豆包推出三档付费订阅：68/200/500 元/月，字节跳动正式入局 AI 变现",
+  "publisher": "ChaoBro",
+  "published_date": "2026-05-05",
+  "accessed_date": "2026-06-09",
+  "claim": "ChaoBro reports that Doubao added paid subscription statements on its App Store page with three monthly tiers at 68, 200, and 500 RMB, while basic features remain free and paid features are in testing.",
+  "claim_type": "pricing",
+  "confidence": "medium",
+  "counterevidence": "Official Doubao pricing evidence has not yet been captured in this repository.",
+  "research_implication": "Supports Doubao as a candidate case for tiered AI-to-C pricing, but requires official App Store or product-page verification before strong conclusions."
+}
+

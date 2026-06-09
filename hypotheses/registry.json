@@ -1,0 +1,100 @@
+[
+  {
+    "id": "H1",
+    "statement": "Standalone AI-to-C subscriptions are difficult because heavy users create variable inference costs while casual users churn.",
+    "status": "active_hypothesis",
+    "confidence": "low",
+    "supporting_evidence_ids": [],
+    "weakening_evidence_ids": [],
+    "contradicting_evidence_ids": [],
+    "would_strengthen": [
+      "Multiple standalone consumer AI products show weak retention or negative gross margin.",
+      "Usage caps or throttling are introduced after heavy usage growth.",
+      "Paid conversion remains low despite high free usage."
+    ],
+    "would_weaken": [
+      "A standalone consumer AI company shows durable paid retention and positive gross margin.",
+      "Inference cost declines enough to support generous usage at consumer subscription prices."
+    ],
+    "would_contradict": [
+      "Several independent AI-to-C products sustain growth, retention, and profitability without platform subsidy."
+    ]
+  },
+  {
+    "id": "H2",
+    "statement": "The strongest consumer AI businesses will be hybrid models combining subscription with bundling, ads, enterprise pull-through, marketplace, or ecosystem retention.",
+    "status": "active_hypothesis",
+    "confidence": "low",
+    "supporting_evidence_ids": [],
+    "weakening_evidence_ids": [],
+    "contradicting_evidence_ids": [],
+    "would_strengthen": [
+      "Successful AI-to-C products add second revenue lines.",
+      "Pure subscription products pivot toward ads, marketplace, usage credits, or enterprise."
+    ],
+    "would_weaken": [
+      "Pure subscription products outperform hybrid products on retention and margin."
+    ],
+    "would_contradict": [
+      "The category standardizes around profitable pure subscriptions."
+    ]
+  },
+  {
+    "id": "H3",
+    "statement": "Large companies are advantaged because they can subsidize consumer usage using infrastructure, distribution, identity/data, bundling, and strategic patience.",
+    "status": "active_hypothesis",
+    "confidence": "low",
+    "supporting_evidence_ids": [],
+    "weakening_evidence_ids": [],
+    "contradicting_evidence_ids": [],
+    "would_strengthen": [
+      "Platform products bundle AI into existing subscriptions or default surfaces.",
+      "Standalone challengers struggle with acquisition cost or compute cost."
+    ],
+    "would_weaken": [
+      "Standalone challengers grow efficiently without platform distribution."
+    ],
+    "would_contradict": [
+      "Standalone challengers consistently beat platform AI products on retention, growth, and monetization."
+    ]
+  },
+  {
+    "id": "H4",
+    "statement": "Tiered usage plans are a natural response to margin pressure because they segment willingness to pay and control heavy-user cost.",
+    "status": "active_hypothesis",
+    "confidence": "low",
+    "supporting_evidence_ids": [],
+    "weakening_evidence_ids": [],
+    "contradicting_evidence_ids": [],
+    "would_strengthen": [
+      "Multiple consumer AI products introduce usage tiers, credits, caps, or priority queues.",
+      "Tiering is linked to advanced models, media generation, agent tasks, or heavy compute features."
+    ],
+    "would_weaken": [
+      "Products remove usage limits while improving margin."
+    ],
+    "would_contradict": [
+      "Unlimited flat-rate consumer AI becomes profitable across categories."
+    ]
+  },
+  {
+    "id": "H5",
+    "statement": "Consumer/business convergence makes AI-to-C more sustainable when AI attaches to broader productivity subscriptions.",
+    "status": "active_hypothesis",
+    "confidence": "low",
+    "supporting_evidence_ids": [],
+    "weakening_evidence_ids": [],
+    "contradicting_evidence_ids": [],
+    "would_strengthen": [
+      "Consumer AI products drive measurable upgrades to productivity bundles.",
+      "Business features subsidize or reinforce consumer surfaces."
+    ],
+    "would_weaken": [
+      "Consumers resist bundled AI upsells or churn from AI-heavy bundles."
+    ],
+    "would_contradict": [
+      "Standalone consumer-only AI products outperform productivity-bundled AI."
+    ]
+  }
+]
+

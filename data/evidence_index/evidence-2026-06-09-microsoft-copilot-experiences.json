@@ -1,0 +1,15 @@
+{
+  "id": "evidence-2026-06-09-microsoft-copilot-experiences",
+  "source_url": "https://support.microsoft.com/en-US/Microsoft-365-Copilot/what-s-the-difference-between-microsoft-copilot-free-and-copilot-in-microsoft-365",
+  "retrieval_method": "browser",
+  "source_title": "What's the difference between Microsoft Copilot (free) and Copilot in Microsoft 365",
+  "publisher": "Microsoft Support",
+  "published_date": "2026-04-01",
+  "accessed_date": "2026-06-09",
+  "claim": "Microsoft describes separate Copilot experiences for free users, individual Microsoft 365 subscribers, and Microsoft 365 business users, with usage limits applying to individual subscription features.",
+  "claim_type": "packaging",
+  "confidence": "high",
+  "counterevidence": "",
+  "research_implication": "Supports treating Microsoft Copilot as a bundled/platform AI case rather than a pure standalone AI-to-C subscription."
+}
+
