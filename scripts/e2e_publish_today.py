@@ -12,6 +12,7 @@ SLUG = "2026-06-09-live-e2e-ai-to-c-pricing-smoke-test"
 SOURCE = ROOT / "reports" / "source" / f"{SLUG}.md"
 KINDLE = ROOT / "outputs" / "kindle" / f"{SLUG}.html"
 NOTION = ROOT / "outputs" / "notion" / f"{SLUG}.md"
+FETCH_MANIFEST = ROOT / "data" / "raw" / f"{TODAY}-e2e-fetch-manifest.md"
 SOURCE_URLS = [
     (
         "openai-chatgpt-plus",
@@ -86,15 +87,29 @@ Today's smoke test supports the agent workflow rather than a market conclusion. 
 
 
 def fetch_live_sources() -> None:
+    FETCH_MANIFEST.parent.mkdir(parents=True, exist_ok=True)
+    manifest_lines = [f"# E2E Fetch Manifest: {TODAY}", ""]
+    failures: list[str] = []
     for slug, url in SOURCE_URLS:
-        run(["fetch-url", url, "--date", TODAY, "--slug", f"e2e-{slug}", "--force"])
+        result = run(["fetch-url", url, "--date", TODAY, "--slug", f"e2e-{slug}", "--force"], check=False)
+        status = "ok" if result.returncode == 0 else "failed"
+        manifest_lines.append(f"- {status}: {slug} {url}")
+        if result.returncode != 0:
+            failures.append(slug)
     missing = [
         slug
         for slug, _ in SOURCE_URLS
         if not list((ROOT / "data" / "raw").glob(f"{TODAY}-e2e-{slug}.*"))
     ]
     if missing:
-        raise RuntimeError(f"Missing fetched raw sources: {', '.join(missing)}")
+        manifest_lines.append("")
+        manifest_lines.append(f"Missing raw files: {', '.join(missing)}")
+    FETCH_MANIFEST.write_text("\n".join(manifest_lines) + "\n", encoding="utf-8")
+    if failures or missing:
+        raise RuntimeError(
+            "Live source fetch failed; not publishing because tool-grounded source collection was incomplete. "
+            f"See {FETCH_MANIFEST}"
+        )
 
 
 def main() -> int:
