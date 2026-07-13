@@ -65,6 +65,17 @@ PYTHONPATH=src python3 -m aitoc_research_agent validate-evidence docs/templates/
 
 After installing the package locally, the shorter `aitoc-research` command is also available.
 
+## Running Inside a Coding Agent (Codex / Claude Code)
+
+The agent can run inside a coding agent and use that runtime's built-in web
+search and page-fetch tools as the evidence-retrieval layer, with no paid search
+API. See `AGENTS.md` (read by Codex and Claude Code) and `CLAUDE.md` for the full
+operating guide. In short: use the runtime's web search for discovery, open each
+source with the runtime's fetch/browse tool, then record verified claims with
+`create-evidence` using `--retrieval-method search` or `browser`. The
+`runtime_web_search` connector in `configs/source_connectors.json` documents this
+no-API-key path.
+
 ## Working Hypothesis
 
 The current starting hypothesis is intentionally provisional:

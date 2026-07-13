@@ -47,6 +47,34 @@
     "notes": "Used for discovery, not as final evidence unless result pages are opened and evaluated."
   },
   {
+    "id": "runtime_web_search",
+    "name": "Coding-agent runtime web search and fetch",
+    "source_type": "runtime_tool",
+    "requires_api_key": false,
+    "env_var": null,
+    "rate_limit": "runtime dependent",
+    "cost_risk": "none",
+    "supports_claims": [
+      "discovery",
+      "pricing",
+      "packaging",
+      "usage_limit",
+      "strategy",
+      "distribution",
+      "competition"
+    ],
+    "outputs": [
+      "search_results",
+      "opened_page_text",
+      "evidence_note"
+    ],
+    "fallbacks": [
+      "official_web",
+      "manual_capture"
+    ],
+    "notes": "Built-in web search and page-fetch tools provided by the coding agent runtime (Codex web search, Claude Code WebSearch/WebFetch). Preferred discovery and retrieval path when running inside a coding agent; needs no API key. Record opened pages with create-evidence using retrieval_method search or browser. See AGENTS.md."
+  },
+  {
     "id": "news_monitor",
     "name": "News monitoring provider",
     "source_type": "api",
