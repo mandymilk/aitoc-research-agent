@@ -1,0 +1,14 @@
+{
+  "id": "evidence-2026-07-13-microsoft-microsoft-s-copilot-support-page-last-updated-a",
+  "source_url": "https://support.microsoft.com/en-us/topic/understanding-the-different-microsoft-copilot-experiences-cfff4791-694a-4d90-9c9c-1eb3fb28e842",
+  "retrieval_method": "browser",
+  "source_title": "What's the difference between Microsoft Copilot (free) and Copilot in Microsoft 365",
+  "publisher": "Microsoft",
+  "published_date": "",
+  "accessed_date": "2026-07-13",
+  "claim": "Microsoft's Copilot support page (last updated April 2026) describes a three-tier structure: Microsoft Copilot (free) at copilot.microsoft.com with no sign-in required; Copilot Chat automatically included for organizations with an eligible Microsoft 365 license; and Microsoft 365 Copilot as a paid add-on license adding advanced AI grounded on work data (files, emails, chats) and reasoning agents like Researcher and Analyst.",
+  "claim_type": "packaging",
+  "confidence": "high",
+  "counterevidence": "",
+  "research_implication": "Confirms Microsoft monetizes consumer/business AI through bundling and a paid add-on layered on existing Microsoft 365 relationships rather than a standalone consumer subscription, supporting the strategic-subsidy/hybrid hypothesis."
+}

@@ -1,0 +1,14 @@
+{
+  "id": "evidence-2026-07-13-microsoft-per-microsoft-s-copilot-support-page-last-updat",
+  "source_url": "https://support.microsoft.com/en-us/topic/understanding-the-different-microsoft-copilot-experiences-cfff4791-694a-4d90-9c9c-1eb3fb28e842",
+  "retrieval_method": "browser",
+  "source_title": "What's the difference between Microsoft Copilot (free) and Copilot in Microsoft 365",
+  "publisher": "Microsoft",
+  "published_date": "",
+  "accessed_date": "2026-07-13",
+  "claim": "Per Microsoft's Copilot support page (last updated April 2026), Copilot in individual Microsoft 365 plans (Personal, Family, Premium) is subject to AI usage limits governed by 'AI Credits'; Microsoft 365 Premium adds advanced AI features, agents (Tasks, Analyst, Researcher, and Photos Agent in preview) and an extended usage allowance, while business Copilot Chat offers pay-as-you-go agents.",
+  "claim_type": "usage_limit",
+  "confidence": "high",
+  "counterevidence": "",
+  "research_implication": "Shows Microsoft is actively metering heavy AI usage via an AI-credits system and reserving richer agent access for higher tiers, evidence that even a subsidized platform shapes usage to protect gross margin (hypothesis 2)."
+}

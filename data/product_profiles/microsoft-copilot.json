@@ -11,11 +11,11 @@
   },
   "paid_tiers": [
     {
-      "name": "Microsoft 365 individual subscriptions with Copilot",
+      "name": "Microsoft 365 individual subscriptions with Copilot (Personal, Family, Premium)",
       "price": "unknown",
       "billing_period": "unknown",
-      "features": ["Copilot access in eligible individual Microsoft 365 plans"],
-      "usage_limits": ["Usage limits apply; exact credit amounts require current verification."]
+      "features": ["Copilot access in eligible individual Microsoft 365 plans", "Microsoft 365 Premium adds advanced AI features and agents (Tasks, Analyst, Researcher, Photos Agent in preview)"],
+      "usage_limits": ["Metered by 'AI Credits'; Microsoft 365 Premium gets an extended usage allowance; exact credit amounts require current verification."]
     },
     {
       "name": "Microsoft 365 Copilot for business",
@@ -33,7 +33,9 @@
   "confidence": "low",
   "evidence_ids": [
     "evidence-2026-06-09-microsoft-copilot-experiences",
-    "evidence-2026-06-09-microsoft-copilot-business-pricing"
+    "evidence-2026-06-09-microsoft-copilot-business-pricing",
+    "evidence-2026-07-13-microsoft-microsoft-s-copilot-support-page-last-updated-a",
+    "evidence-2026-07-13-microsoft-per-microsoft-s-copilot-support-page-last-updat"
   ],
   "open_questions": [
     "What is current consumer Copilot paid conversion?",
