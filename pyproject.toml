@@ -1,6 +1,6 @@
 [project]
 name = "aitoc-research-agent"
-version = "0.6.2"
+version = "0.7.0"
 description = "A research-agent repository for studying AI-to-C business models."
 requires-python = ">=3.10"
 dependencies = []

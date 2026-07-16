@@ -1,0 +1,70 @@
+[
+  {
+    "id": "H1",
+    "statement": "SEA's agentic-commerce direction depends on external AI platforms (OpenAI, Google) for the agent and discovery layer, making Shopee a supplier to third-party assistants rather than the owner of the shopping agent.",
+    "status": "active_hypothesis",
+    "confidence": "low",
+    "supporting_evidence_ids": [
+      "evidence-2026-07-14-sea-limited-the-shopee-app-is-now-available-in-chatgpt-for-u",
+      "evidence-2026-07-14-reuters-google-and-sea-ltd-agreed-to-develop-ai-tools-fo"
+    ],
+    "weakening_evidence_ids": [
+      "evidence-2026-07-14-sea-limited-sea-announced-the-establishment-of-an-artificial"
+    ],
+    "contradicting_evidence_ids": [],
+    "would_strengthen": [
+      "Shopee's primary AI shopping surface is inside third-party assistants (ChatGPT, Google) rather than its own app.",
+      "Discovery and transaction economics (ads, take rate) accrue partly to the AI platform."
+    ],
+    "would_weaken": [
+      "Shopee ships an owned in-app shopping agent with comparable reach.",
+      "SEA's AI CoE produces first-party agent capability that reduces partner reliance."
+    ],
+    "would_contradict": [
+      "Shopee's own agent becomes the dominant discovery surface and partners become optional."
+    ]
+  },
+  {
+    "id": "H2",
+    "statement": "SEA is pursuing a hybrid AI model (consumer discovery via ChatGPT + seller tooling via ChatGPT for Business + ShopeeVIP bundling) rather than a standalone consumer AI subscription.",
+    "status": "active_hypothesis",
+    "confidence": "low",
+    "supporting_evidence_ids": [
+      "evidence-2026-07-14-sea-limited-sea-limited-and-openai-announced-a-new-strategic",
+      "evidence-2026-07-14-sea-limited-the-shopee-app-is-now-available-in-chatgpt-for-u"
+    ],
+    "weakening_evidence_ids": [],
+    "contradicting_evidence_ids": [],
+    "would_strengthen": [
+      "AI monetization shows up as seller tooling, ads, and membership bundling rather than a paid consumer AI tier."
+    ],
+    "would_weaken": [
+      "Shopee launches a standalone paid consumer AI assistant subscription."
+    ],
+    "would_contradict": [
+      "SEA's AI revenue is dominated by a direct consumer AI subscription."
+    ]
+  },
+  {
+    "id": "H3",
+    "statement": "SEA is building in-house AI capability (AI Centre of Excellence, Codex adoption) to reduce long-term dependence on external AI partners.",
+    "status": "active_hypothesis",
+    "confidence": "low",
+    "supporting_evidence_ids": [
+      "evidence-2026-07-14-sea-limited-sea-announced-the-establishment-of-an-artificial"
+    ],
+    "weakening_evidence_ids": [
+      "evidence-2026-07-14-sea-limited-the-shopee-app-is-now-available-in-chatgpt-for-u"
+    ],
+    "contradicting_evidence_ids": [],
+    "would_strengthen": [
+      "AI CoE output ships into Shopee as first-party AI features."
+    ],
+    "would_weaken": [
+      "SEA continues to route core AI experiences through partners despite the AI CoE."
+    ],
+    "would_contradict": [
+      "SEA winds down in-house AI investment and fully outsources the agent layer."
+    ]
+  }
+]

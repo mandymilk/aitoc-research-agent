@@ -1,8 +1,17 @@
 # AI-to-C Business Model Research Plan
 
-Version: `v0.6.2`
-Last updated: 2026-06-09
+Version: `v0.7.0`
+Last updated: 2026-07-14
 Owner: Research agent
+
+> **Plan levels (topic interests layer).** This document is now the plan for one
+> topic: `aitoc` (AI-to-Consumer business models), the first entry in the topic
+> registry (`topics/registry.json`). The shared *machinery* — the daily/weekly
+> radar, evidence discipline, freshness/falsification audits, and output layers —
+> is topic-agnostic and applies to every topic. The *content* below (objective,
+> scope, hypotheses, phases 1–4) is specific to `aitoc`. New topics created with
+> `new-research` get their own scoped plan under `topics/<slug>/`. See Phase 0.10
+> and decision record 0002.
 
 ## 1. Objective
 
@@ -125,6 +134,18 @@ Status: in progress
 - Add falsification policy and falsification audit command.
 - Add case-study backlog with challenger coverage.
 - Add explicit implementation-limit warning so scaffolding is not confused with live evidence collection.
+
+### Phase 0.10: Topic Interests Layer
+
+Status: in progress
+
+- Promote "research topic" from an implicit, hardcoded AI-to-C scope to a selectable, user-defined object in `topics/registry.json` (schema: `schemas/topic.schema.json`).
+- Keep the current AI-to-C content as the first topic, `aitoc`, using the legacy root layout so existing files and tests keep working.
+- Give new topics self-contained folders under `topics/<slug>/` (own plan, hypotheses, evidence, runs, signals, audits).
+- Add CLI: `new-research`, `topics`, `use-topic`, and a `--topic` flag on the daily/weekly/signal/idea/evidence/hypotheses/audit commands.
+- Resolve the active topic as `--topic` flag → `AITOC_TOPIC` env → `topics/active_topic` file → default `aitoc`.
+- Keep evidence rules, claim vocabulary, and freshness windows shared, while letting a topic extend claim types and override freshness windows.
+- Treat this plan document as the `aitoc` topic plan; new topics reuse the Phase 1–4 shape below.
 
 ### Phase 1: Market Map
 

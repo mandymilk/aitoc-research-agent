@@ -11,7 +11,8 @@ The first research focus is the AI-to-C business model:
 
 ## Repository Map
 
-- `docs/research_plan.md`: the evolving master plan. Start here.
+- `topics/`: the topic interests layer — the selectable research topics (`registry.json`, `active_topic`) and each scoped topic's folder. The default topic is `aitoc`.
+- `docs/research_plan.md`: the evolving master plan (the `aitoc` topic plan). Start here.
 - `docs/agent_design.md`: the dedicated research-agent architecture and workflow.
 - `docs/research_questions.md`: hypotheses, decision questions, and falsification tests.
 - `docs/source_strategy.md`: source hierarchy, evidence rules, and current seed sources.
@@ -36,13 +37,16 @@ The first research focus is the AI-to-C business model:
 
 ## Current Version
 
-`v0.6.2` is a research-program repository. It does not claim a final answer yet. It defines how the agent should collect evidence, audit freshness, test hypotheses, compare products, model economics, publish findings, and keep the thesis alive as the AI-to-C market changes.
+`v0.7.0` is a research-program repository. It does not claim a final answer yet. It defines how the agent should collect evidence, audit freshness, test hypotheses, compare products, model economics, publish findings, and keep the thesis alive as the AI-to-C market changes.
 
 The authoritative project version is stored in `VERSION`.
 
 ## Quick Start
 
 ```bash
+PYTHONPATH=src python3 -m aitoc_research_agent topics
+PYTHONPATH=src python3 -m aitoc_research_agent new-research "Electric Vehicles"
+PYTHONPATH=src python3 -m aitoc_research_agent use-topic electric-vehicles
 PYTHONPATH=src python3 -m aitoc_research_agent plan
 PYTHONPATH=src python3 -m aitoc_research_agent daily-run
 PYTHONPATH=src python3 -m aitoc_research_agent weekly-run

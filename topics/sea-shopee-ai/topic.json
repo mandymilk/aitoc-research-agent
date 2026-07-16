@@ -1,0 +1,46 @@
+{
+  "id": "sea-shopee-ai",
+  "title": "SEA's AI initiatives, especially Shopee and agentic commerce direction",
+  "status": "active",
+  "layout": "scoped",
+  "created_date": "2026-07-14",
+  "main_question": "Is SEA building a durable, owned AI/agentic-commerce advantage for Shopee, or is its agentic-commerce direction dependent on external AI platforms (OpenAI, Google)?",
+  "scope_in": [
+    "Sea Limited AI across Shopee, Monee, and Garena",
+    "Agentic commerce: AI product discovery and purchase completion",
+    "Seller-side AI tooling and ShopeeVIP AI bundling",
+    "SEA in-house AI capability (AI CoE, Codex)"
+  ],
+  "scope_out": [
+    "Non-SEA SEA-region AI efforts except as competitive comparison",
+    "Model-provider infrastructure economics unless they change Shopee's position"
+  ],
+  "search_queries": {
+    "daily": [
+      "Shopee AI",
+      "Sea Limited AI",
+      "Shopee agentic commerce",
+      "Shopee ChatGPT",
+      "Shopee AI shopping assistant"
+    ],
+    "weekly": [
+      "Sea Limited OpenAI partnership",
+      "Google Sea agentic shopping Shopee",
+      "Shopee AI monetization sellers",
+      "Southeast Asia agentic commerce"
+    ],
+    "regional": [
+      "Shopee AI Indonesia",
+      "Shopee AI Vietnam",
+      "Lazada AI agent Southeast Asia",
+      "Shopee Brazil AI ChatGPT"
+    ]
+  },
+  "claim_types": [],
+  "freshness_overrides": {},
+  "hypothesis_ids": [
+    "H1",
+    "H2",
+    "H3"
+  ]
+}

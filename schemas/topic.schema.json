@@ -1,0 +1,67 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Topic Interest",
+  "description": "A selectable research topic that scopes the plan, hypotheses, evidence, runs, signals, and audits.",
+  "type": "object",
+  "required": ["id", "title", "status", "layout", "main_question"],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+      "description": "Slug used for folder names and the --topic flag."
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "type": "string",
+      "enum": ["active", "paused", "archived"]
+    },
+    "layout": {
+      "type": "string",
+      "enum": ["legacy", "scoped"],
+      "description": "legacy = root repository paths (only the seed aitoc topic); scoped = self-contained topics/<slug>/ folder."
+    },
+    "created_date": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+    },
+    "main_question": {
+      "type": "string",
+      "minLength": 1
+    },
+    "scope_in": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "scope_out": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "search_queries": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "daily": {"type": "array", "items": {"type": "string"}},
+        "weekly": {"type": "array", "items": {"type": "string"}},
+        "regional": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "claim_types": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Additional claim types beyond the default vocabulary."
+    },
+    "freshness_overrides": {
+      "type": "object",
+      "description": "Claim-type to maximum-age-in-days overrides.",
+      "additionalProperties": {"type": "integer", "minimum": 0}
+    },
+    "hypothesis_ids": {
+      "type": "array",
+      "items": {"type": "string"}
+    }
+  }
+}

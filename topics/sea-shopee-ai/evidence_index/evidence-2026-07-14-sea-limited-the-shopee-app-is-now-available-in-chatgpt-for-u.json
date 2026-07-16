@@ -1,0 +1,15 @@
+{
+  "id": "evidence-2026-07-14-sea-limited-the-shopee-app-is-now-available-in-chatgpt-for-u",
+  "topic_id": "sea-shopee-ai",
+  "source_url": "https://www.sea.com/news/406",
+  "retrieval_method": "browser",
+  "source_title": "Sea and OpenAI Deepen Strategic Partnership to Drive AI Adoption and Innovation Across Southeast Asia and Brazil",
+  "publisher": "Sea Limited",
+  "published_date": "2026-06-22",
+  "accessed_date": "2026-07-14",
+  "claim": "The Shopee app is now available in ChatGPT for users in Indonesia, Malaysia, the Philippines, Singapore, Thailand, Taiwan, Vietnam, and Brazil, making Shopee the first e-commerce platform of its kind available in ChatGPT across Southeast Asia and Latin America.",
+  "claim_type": "distribution",
+  "confidence": "high",
+  "counterevidence": "",
+  "research_implication": "SEA agentic-commerce discovery is being routed through a third-party AI assistant (ChatGPT), raising the question of whether Shopee owns the agent layer or becomes a supplier to it."
+}

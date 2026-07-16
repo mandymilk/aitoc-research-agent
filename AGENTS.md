@@ -57,6 +57,13 @@ Run every CLI command with `PYTHONPATH=src python3 -m aitoc_research_agent ...`
 (or `aitoc-research ...` if the package is installed). No third-party
 dependencies are required — it is pure standard library.
 
+0. **Pick or create a topic.** Everything is scoped to a research topic. List
+   topics with `topics`; select one with `use-topic <slug>`; create a new one
+   with `new-research "<topic title>"` (scaffolds a `topics/<slug>/` folder with
+   a plan and hypotheses to fill in). The default topic is `aitoc` (AI-to-C
+   business models). You can also pass `--topic <slug>` to individual commands.
+   Active-topic resolution: `--topic` → `AITOC_TOPIC` env → `topics/active_topic`
+   file → default `aitoc`. See `topics/README.md` and decision record 0002.
 1. **Start a run note:** `daily-run` (or `weekly-run`). Read the printed path.
 2. **Discover:** use the runtime web search tool for the trend-discovery targets
    listed in `docs/agent_design.md` (pricing changes, usage-limit changes, ads/
@@ -90,6 +97,18 @@ dependencies are required — it is pure standard library.
    = 7 days, app_rank = 1 day).
 9. **Synthesize:** add a `findings/weekly/` entry; a thesis update only if the
    main argument changes; update `reports/` last.
+10. **Publish (mandatory, do not skip):** create a memo with `new-memo`, fill it
+    from the evidence, then `export-kindle` and `export-notion`. Whenever the
+    publishing env is configured, you MUST also `publish-kindle` (sends the
+    Kindle email) and `publish-notion` (creates the page). Every run finishes the
+    full pipeline including delivery — do not stop at drafts.
+11. **Verify before calling it done:** run `verify-run --date <date>` for the
+    topic, and `verify-run --all` to verify the whole project (every topic's
+    latest run). It must print `RESULT: complete` / `PROJECT RESULT: complete`
+    (exit 0). It checks the run note, evidence, hypotheses, both audits, the
+    memo, and the Kindle/Notion publish receipts (required when the env is
+    configured). If it reports `INCOMPLETE`, finish the missing stage and re-run
+    before declaring the run done.
 
 ## Retrieval-Method Mapping
 
@@ -110,10 +129,14 @@ challengers, and unsupported current facts marked `unknown`.
 ## Useful Commands
 
 - `plan` — print the master research plan.
+- `topics` — list research topics and show the active one.
+- `use-topic <slug>` — set the active research topic.
+- `new-research "<title>"` — scaffold a new topic (`topics/<slug>/`).
 - `daily-run` / `weekly-run` — dated run notes.
 - `new-signal "<title>"` / `new-idea "<title>"` — trend pipeline.
 - `create-evidence ...` / `validate-evidence <path>` — evidence intake.
 - `audit-freshness` / `audit-falsification` — quality audits.
+- `verify-run` — end-to-end completion check (fails if publish receipts missing when env is set). Use `--all` for whole-project verification across every topic.
 - `hypotheses` / `case-coverage` / `connectors` — status views.
 - `new-memo` / `export-kindle` / `export-notion` — output (publishing needs
   private credentials in `.env`; see `configs/env.example`).

@@ -10,9 +10,11 @@ from datetime import date, datetime
 from pathlib import Path
 from urllib.parse import urlparse
 
+from aitoc_research_agent import topics
 from aitoc_research_agent.connectors.web_fetch import fetch_url
 from aitoc_research_agent.publishers.kindle_email import send_to_kindle
 from aitoc_research_agent.publishers.notion_api import create_notion_page
+from aitoc_research_agent.topics import TopicContext, TopicError
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -48,49 +50,11 @@ REQUIRED_EVIDENCE_FIELDS = {
     "research_implication",
 }
 
-VALID_CLAIM_TYPES = {
-    "acquisition",
-    "app_rank",
-    "competition",
-    "cost",
-    "discovery",
-    "distribution",
-    "download_estimate",
-    "funding",
-    "packaging",
-    "pricing",
-    "revenue",
-    "revenue_estimate",
-    "retention",
-    "shutdown",
-    "strategy",
-    "traffic_estimate",
-    "usage_limit",
-    "user_behavior",
-}
+VALID_CLAIM_TYPES = topics.DEFAULT_CLAIM_TYPES
 
 VALID_CONFIDENCE = {"low", "medium", "high"}
 VALID_RETRIEVAL_METHODS = {"api", "browser", "search", "manual", "local"}
-MAX_AGE_DAYS_BY_CLAIM_TYPE = {
-    "pricing": 7,
-    "packaging": 14,
-    "usage_limit": 7,
-    "app_rank": 1,
-    "download_estimate": 30,
-    "revenue": 90,
-    "retention": 90,
-    "cost": 30,
-    "distribution": 30,
-    "strategy": 60,
-    "user_behavior": 30,
-    "competition": 30,
-    "discovery": 14,
-    "funding": 60,
-    "shutdown": 60,
-    "acquisition": 60,
-    "revenue_estimate": 30,
-    "traffic_estimate": 30,
-}
+MAX_AGE_DAYS_BY_CLAIM_TYPE = topics.DEFAULT_FRESHNESS_BY_CLAIM_TYPE
 
 
 def slugify(value: str) -> str:
@@ -98,10 +62,20 @@ def slugify(value: str) -> str:
     return slug or "new-product"
 
 
-def show_plan(_: argparse.Namespace) -> int:
-    print(PLAN_PATH)
+def resolve_topic(args: argparse.Namespace) -> TopicContext:
+    """Resolve the active topic context from ``--topic`` or the active pointer."""
+    slug = topics.resolve_active_slug(getattr(args, "topic", None))
+    return topics.topic_context(slug)
+
+
+def show_plan(args: argparse.Namespace) -> int:
+    ctx = resolve_topic(args)
+    if not ctx.plan_path.exists():
+        print(f"No research plan for topic {ctx.slug!r} yet: {ctx.plan_path}", file=sys.stderr)
+        return 1
+    print(ctx.plan_path)
     print()
-    print(PLAN_PATH.read_text(encoding="utf-8"))
+    print(ctx.plan_path.read_text(encoding="utf-8"))
     return 0
 
 
@@ -208,6 +182,7 @@ def is_valid_uri(value: str) -> bool:
 def validate_evidence_data(data: dict) -> list[str]:
     allowed_fields = {
         "id",
+        "topic_id",
         "source_url",
         "retrieval_method",
         "source_title",
@@ -307,8 +282,11 @@ def validate_product_profile_data(data: dict) -> list[str]:
 
 
 def new_daily_run(args: argparse.Namespace) -> int:
+    ctx = resolve_topic(args)
     run_date = today_string(args.date)
-    content = f"""# Daily AI-to-C Trend Run: {run_date}
+    content = f"""# Daily Trend Run — {ctx.title}: {run_date}
+
+Topic: {ctx.slug}
 
 ## Scan Summary
 
@@ -340,12 +318,15 @@ TODO
 
 - TODO
 """
-    return write_if_allowed(DAILY_RUN_DIR / f"{run_date}.md", content, args.force)
+    return write_if_allowed(ctx.daily_run_dir / f"{run_date}.md", content, args.force)
 
 
 def new_weekly_run(args: argparse.Namespace) -> int:
+    ctx = resolve_topic(args)
     run_date = today_string(args.date)
-    content = f"""# Weekly AI-to-C Trend Review: {run_date}
+    content = f"""# Weekly Trend Review — {ctx.title}: {run_date}
+
+Topic: {ctx.slug}
 
 ## Executive Summary
 
@@ -381,10 +362,11 @@ TODO
 
 - TODO
 """
-    return write_if_allowed(WEEKLY_RUN_DIR / f"{run_date}.md", content, args.force)
+    return write_if_allowed(ctx.weekly_run_dir / f"{run_date}.md", content, args.force)
 
 
 def new_trend_signal(args: argparse.Namespace) -> int:
+    ctx = resolve_topic(args)
     signal_date = today_string(args.date)
     slug = slugify(args.title)
     content = f"""# Trend Signal: {args.title}
@@ -432,10 +414,11 @@ Choose one:
 
 - TODO
 """
-    return write_if_allowed(TREND_SIGNAL_DIR / f"{signal_date}-{slug}.md", content, args.force)
+    return write_if_allowed(ctx.signal_dir / f"{signal_date}-{slug}.md", content, args.force)
 
 
 def new_research_idea(args: argparse.Namespace) -> int:
+    ctx = resolve_topic(args)
     idea_date = today_string(args.date)
     slug = slugify(args.title)
     content = f"""# Research Idea: {args.title}
@@ -468,10 +451,11 @@ TODO
 
 TODO
 """
-    return write_if_allowed(RESEARCH_IDEA_DIR / f"{idea_date}-{slug}.md", content, args.force)
+    return write_if_allowed(ctx.research_idea_dir / f"{idea_date}-{slug}.md", content, args.force)
 
 
 def new_memo(args: argparse.Namespace) -> int:
+    ctx = resolve_topic(args)
     memo_date = today_string(args.date)
     slug = slugify(args.title)
     content = f"""# {args.title}
@@ -479,8 +463,9 @@ def new_memo(args: argparse.Namespace) -> int:
 Date: {memo_date}
 Version: v0.1
 Status: draft
+Topic: {ctx.slug}
 Output targets: Kindle, Notion
-Tags: ai-to-c, business-model
+Tags: {ctx.slug}, business-model
 
 ## Executive Summary
 
@@ -518,7 +503,7 @@ TODO
 - Source URL:
 - Retrieval method:
 """
-    return write_if_allowed(SOURCE_REPORT_DIR / f"{memo_date}-{slug}.md", content, args.force)
+    return write_if_allowed(ctx.source_report_dir / f"{memo_date}-{slug}.md", content, args.force)
 
 
 def markdown_to_simple_html(markdown: str, title: str) -> str:
@@ -726,7 +711,38 @@ def require_env(name: str) -> str:
     return value
 
 
+def kindle_configured() -> bool:
+    return all(
+        os.environ.get(key, "").strip()
+        for key in ("KINDLE_SMTP_HOST", "KINDLE_SMTP_USERNAME", "KINDLE_SMTP_PASSWORD", "KINDLE_TO_EMAIL")
+    )
+
+
+def notion_configured() -> bool:
+    has_key = bool(os.environ.get("NOTION_API_KEY", "").strip())
+    has_parent = bool(
+        os.environ.get("NOTION_PAGE_ID", "").strip() or os.environ.get("NOTION_DATABASE_ID", "").strip()
+    )
+    return has_key and has_parent
+
+
+def write_publish_receipt(ctx: TopicContext, channel: str, source: Path, detail: dict, receipt_date: str | None = None) -> Path:
+    ctx.publish_log_dir.mkdir(parents=True, exist_ok=True)
+    receipt_date = receipt_date or date.today().isoformat()
+    path = ctx.publish_log_dir / f"{receipt_date}-{channel}-{slugify(source.stem)}.json"
+    data = {
+        "date": receipt_date,
+        "channel": channel,
+        "topic_id": ctx.slug,
+        "source": str(source.relative_to(ROOT) if source.is_relative_to(ROOT) else source),
+    }
+    data.update(detail)
+    path.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    return path
+
+
 def publish_kindle(args: argparse.Namespace) -> int:
+    ctx = resolve_topic(args)
     source = resolve_repo_path(args.source)
     if source.suffix.lower() == ".md":
         markdown = source.read_text(encoding="utf-8")
@@ -752,11 +768,20 @@ def publish_kindle(args: argparse.Namespace) -> int:
     except Exception as exc:
         print(f"Kindle publish failed: {exc}", file=sys.stderr)
         return 1
+    receipt = write_publish_receipt(
+        ctx,
+        "kindle",
+        attachment,
+        {"subject": args.subject or title, "to": os.environ.get("KINDLE_TO_EMAIL", "")},
+        today_string(getattr(args, "date", None)),
+    )
     print(f"Sent to Kindle: {attachment}")
+    print(f"Receipt: {receipt}")
     return 0
 
 
 def publish_notion(args: argparse.Namespace) -> int:
+    ctx = resolve_topic(args)
     source = resolve_repo_path(args.source)
     markdown = source.read_text(encoding="utf-8")
     title = args.title or title_from_markdown(markdown, source.stem)
@@ -778,9 +803,17 @@ def publish_notion(args: argparse.Namespace) -> int:
     except Exception as exc:
         print(f"Notion publish failed: {exc}", file=sys.stderr)
         return 1
+    receipt = write_publish_receipt(
+        ctx,
+        "notion",
+        source,
+        {"title": title, "page_id": result.page_id, "url": result.url or ""},
+        today_string(getattr(args, "date", None)),
+    )
     print(f"Created Notion page: {result.page_id}")
     if result.url:
         print(result.url)
+    print(f"Receipt: {receipt}")
     return 0
 
 
@@ -825,10 +858,19 @@ def validate_product_profile(args: argparse.Namespace) -> int:
 
 
 def create_evidence(args: argparse.Namespace) -> int:
+    ctx = resolve_topic(args)
+    if args.claim_type not in ctx.claim_types:
+        print(
+            f"Invalid claim_type {args.claim_type!r} for topic {ctx.slug!r}. "
+            f"Valid types: {', '.join(sorted(ctx.claim_types))}",
+            file=sys.stderr,
+        )
+        return 1
     evidence_date = today_string(args.accessed_date)
     evidence_id = args.id or f"evidence-{evidence_date}-{slugify(args.publisher)}-{slugify(args.claim[:48])}"
     data = {
         "id": evidence_id,
+        "topic_id": ctx.slug,
         "source_url": args.source_url,
         "retrieval_method": args.retrieval_method,
         "source_title": args.source_title,
@@ -841,7 +883,7 @@ def create_evidence(args: argparse.Namespace) -> int:
         "counterevidence": args.counterevidence or "",
         "research_implication": args.research_implication,
     }
-    path = EVIDENCE_INDEX_DIR / f"{evidence_id}.json"
+    path = ctx.evidence_index_dir / f"{evidence_id}.json"
     return write_if_allowed(path, json.dumps(data, indent=2, ensure_ascii=False) + "\n", args.force)
 
 
@@ -880,25 +922,29 @@ def show_connectors(_: argparse.Namespace) -> int:
     return 0
 
 
-def show_hypotheses(_: argparse.Namespace) -> int:
-    hypotheses = load_json(HYPOTHESIS_REGISTRY_PATH)
+def show_hypotheses(args: argparse.Namespace) -> int:
+    ctx = resolve_topic(args)
+    if not ctx.hypotheses_path.exists():
+        print(f"No hypotheses registry for topic {ctx.slug!r} yet: {ctx.hypotheses_path}", file=sys.stderr)
+        return 1
+    hypotheses = load_json(ctx.hypotheses_path)
     assert isinstance(hypotheses, list)
     for item in hypotheses:
-        print(f"{item['id']}: {item['statement']}")
-        print(f"  status: {item['status']}")
-        print(f"  confidence: {item['confidence']}")
-        print(f"  supporting: {len(item['supporting_evidence_ids'])}")
-        print(f"  weakening: {len(item['weakening_evidence_ids'])}")
-        print(f"  contradicting: {len(item['contradicting_evidence_ids'])}")
+        print(f"{item.get('id', '?')}: {item.get('statement', '')}")
+        print(f"  status: {item.get('status', '')}")
+        print(f"  confidence: {item.get('confidence', '')}")
+        print(f"  supporting: {len(item.get('supporting_evidence_ids', []))}")
+        print(f"  weakening: {len(item.get('weakening_evidence_ids', []))}")
+        print(f"  contradicting: {len(item.get('contradicting_evidence_ids', []))}")
         print()
     return 0
 
 
-def iter_evidence_notes() -> list[tuple[Path, dict]]:
+def iter_evidence_notes(evidence_dir: Path) -> list[tuple[Path, dict]]:
     notes: list[tuple[Path, dict]] = []
-    if not EVIDENCE_INDEX_DIR.exists():
+    if not evidence_dir.exists():
         return notes
-    for path in sorted(EVIDENCE_INDEX_DIR.glob("*.json")):
+    for path in sorted(evidence_dir.glob("*.json")):
         try:
             data = load_json(path)
         except json.JSONDecodeError:
@@ -908,11 +954,11 @@ def iter_evidence_notes() -> list[tuple[Path, dict]]:
     return notes
 
 
-def stale_evidence(as_of: date) -> list[tuple[Path, dict, int, int]]:
+def stale_evidence(ctx: TopicContext, as_of: date) -> list[tuple[Path, dict, int, int]]:
     stale: list[tuple[Path, dict, int, int]] = []
-    for path, data in iter_evidence_notes():
+    for path, data in iter_evidence_notes(ctx.evidence_index_dir):
         claim_type = str(data.get("claim_type", ""))
-        max_age = MAX_AGE_DAYS_BY_CLAIM_TYPE.get(claim_type, 30)
+        max_age = ctx.max_age_for(claim_type)
         accessed = data.get("accessed_date")
         if not isinstance(accessed, str):
             continue
@@ -926,10 +972,13 @@ def stale_evidence(as_of: date) -> list[tuple[Path, dict, int, int]]:
 
 
 def audit_freshness(args: argparse.Namespace) -> int:
+    ctx = resolve_topic(args)
     audit_date = parse_iso_date(today_string(args.date))
-    stale = stale_evidence(audit_date)
+    stale = stale_evidence(ctx, audit_date)
     lines = [
-        f"# Freshness Audit: {audit_date.isoformat()}",
+        f"# Freshness Audit — {ctx.title}: {audit_date.isoformat()}",
+        "",
+        f"Topic: {ctx.slug}",
         "",
         "## Summary",
         "",
@@ -946,21 +995,24 @@ def audit_freshness(args: argparse.Namespace) -> int:
             f"{data.get('accessed_date', '')} | {age} | {max_age} | {path.relative_to(ROOT)} |"
         )
     lines.extend(["", "## Required Refresh Actions", "", "- TODO" if stale else "- None"])
-    output = FRESHNESS_AUDIT_DIR / f"{audit_date.isoformat()}.md"
+    output = ctx.freshness_dir / f"{audit_date.isoformat()}.md"
     return write_if_allowed(output, "\n".join(lines) + "\n", args.force)
 
 
 def new_falsification_audit(args: argparse.Namespace) -> int:
+    ctx = resolve_topic(args)
     audit_date = today_string(args.date)
-    hypotheses = load_json(HYPOTHESIS_REGISTRY_PATH)
+    hypotheses = load_json(ctx.hypotheses_path) if ctx.hypotheses_path.exists() else []
     assert isinstance(hypotheses, list)
     rows = [
         "| Hypothesis | Direction | Evidence | Reasoning | Follow-Up |",
         "| --- | --- | --- | --- | --- |",
     ]
     for item in hypotheses:
-        rows.append(f"| {item['id']} | ambiguous |  |  |  |")
-    content = f"""# Falsification Audit: {audit_date}
+        rows.append(f"| {item.get('id', '?')} | ambiguous |  |  |  |")
+    content = f"""# Falsification Audit — {ctx.title}: {audit_date}
+
+Topic: {ctx.slug}
 
 ## Summary
 
@@ -982,7 +1034,7 @@ TODO
 
 - TODO
 """
-    return write_if_allowed(FALSIFICATION_AUDIT_DIR / f"{audit_date}.md", content, args.force)
+    return write_if_allowed(ctx.falsification_dir / f"{audit_date}.md", content, args.force)
 
 
 def show_case_coverage(_: argparse.Namespace) -> int:
@@ -1008,6 +1060,258 @@ def show_case_coverage(_: argparse.Namespace) -> int:
     return 0
 
 
+def verify_run_checks(ctx: TopicContext, run_date: str) -> list[dict]:
+    """Return the end-to-end pipeline checklist for a topic run on ``run_date``."""
+    checks: list[dict] = []
+
+    def add(name: str, ok: bool, required: bool = True, detail: str = "") -> None:
+        checks.append({"name": name, "ok": ok, "required": required, "detail": detail})
+
+    daily = ctx.daily_run_dir / f"{run_date}.md"
+    weekly = ctx.weekly_run_dir / f"{run_date}.md"
+    add("run_note", daily.exists() or weekly.exists(), detail=f"{daily} (or weekly)")
+
+    evidence = list(ctx.evidence_index_dir.glob("*.json")) if ctx.evidence_index_dir.exists() else []
+    add("evidence", len(evidence) >= 1, detail=f"{len(evidence)} note(s)")
+
+    hypotheses_ok = False
+    if ctx.hypotheses_path.exists():
+        try:
+            data = json.loads(ctx.hypotheses_path.read_text(encoding="utf-8"))
+            hypotheses_ok = isinstance(data, list) and len(data) >= 1
+        except json.JSONDecodeError:
+            hypotheses_ok = False
+    add("hypotheses", hypotheses_ok, detail=str(ctx.hypotheses_path))
+
+    add("freshness_audit", (ctx.freshness_dir / f"{run_date}.md").exists())
+    add("falsification_audit", (ctx.falsification_dir / f"{run_date}.md").exists())
+
+    memos = list(ctx.source_report_dir.glob("*.md")) if ctx.source_report_dir.exists() else []
+    add("memo", len(memos) >= 1, detail=f"{len(memos)} memo(s)")
+
+    log_dir = ctx.publish_log_dir
+    kindle_receipts = list(log_dir.glob(f"{run_date}-kindle-*.json")) if log_dir.exists() else []
+    if kindle_configured():
+        add("kindle_publish", len(kindle_receipts) >= 1, detail="receipt required (env configured)")
+    else:
+        add("kindle_publish", True, required=False, detail="skipped (env not configured)")
+
+    notion_receipts = list(log_dir.glob(f"{run_date}-notion-*.json")) if log_dir.exists() else []
+    if notion_configured():
+        add("notion_publish", len(notion_receipts) >= 1, detail="receipt required (env configured)")
+    else:
+        add("notion_publish", True, required=False, detail="skipped (env not configured)")
+
+    return checks
+
+
+def verify_run(args: argparse.Namespace) -> int:
+    if getattr(args, "all", False):
+        return verify_project(args)
+    ctx = resolve_topic(args)
+    run_date = today_string(args.date)
+    all_ok = emit_topic_verification(ctx, run_date)
+    if all_ok:
+        print("RESULT: complete")
+        return 0
+    print("RESULT: INCOMPLETE \u2014 finish the missing stages before calling the run done.", file=sys.stderr)
+    return 1
+
+
+def topic_run_dates(ctx: TopicContext) -> list[str]:
+    """All dated run-note stems (daily and weekly) for a topic, sorted ascending."""
+    dates: set[str] = set()
+    for directory in (ctx.daily_run_dir, ctx.weekly_run_dir):
+        if directory.exists():
+            for path in directory.glob("*.md"):
+                dates.add(path.stem)
+    return sorted(dates)
+
+
+def latest_run_date(ctx: TopicContext) -> str | None:
+    dates = topic_run_dates(ctx)
+    return dates[-1] if dates else None
+
+
+def emit_topic_verification(ctx: TopicContext, run_date: str, indent: str = "") -> bool:
+    checks = verify_run_checks(ctx, run_date)
+    print(f"{indent}End-to-end verification \u2014 topic {ctx.slug} \u2014 {run_date}")
+    all_ok = True
+    for check in checks:
+        mark = "ok" if check["ok"] else "MISSING"
+        if not check["ok"] and check["required"]:
+            all_ok = False
+        suffix = "" if check["required"] else " (optional)"
+        print(f"{indent}  [{mark}] {check['name']}{suffix}: {check['detail']}")
+    return all_ok
+
+
+def verify_project(args: argparse.Namespace) -> int:
+    """Verify the end-to-end pipeline across every topic in the project."""
+    registry = topics.load_registry()
+    print("Project-level end-to-end verification")
+    overall_ok = True
+    checked = 0
+    for entry in registry:
+        slug = entry.get("id")
+        ctx = topics.topic_context(slug, registry)
+        if args.date:
+            run_date = args.date
+            has_run = (ctx.daily_run_dir / f"{run_date}.md").exists() or (
+                ctx.weekly_run_dir / f"{run_date}.md"
+            ).exists()
+            if not has_run:
+                print(f"\n[{slug}] no run on {run_date} \u2014 skipped")
+                continue
+        else:
+            run_date = latest_run_date(ctx)
+            if run_date is None:
+                print(f"\n[{slug}] no runs yet \u2014 skipped")
+                continue
+        checked += 1
+        print()
+        topic_ok = emit_topic_verification(ctx, run_date)
+        overall_ok = overall_ok and topic_ok
+    print()
+    if checked == 0:
+        print("PROJECT RESULT: nothing to verify (no topic runs found).")
+        return 0
+    if overall_ok:
+        print(f"PROJECT RESULT: complete ({checked} topic run(s) verified)")
+        return 0
+    print(f"PROJECT RESULT: INCOMPLETE ({checked} topic run(s) checked)", file=sys.stderr)
+    return 1
+
+
+TOPIC_PLAN_TEMPLATE = """# Research Plan: {title}
+
+Version: v0.1
+Status: draft
+Topic: {slug}
+Created: {created}
+
+> Meta note: this is a per-topic plan. The shared operating system (daily/weekly
+> radar, evidence discipline, freshness/falsification audits, output layers)
+> lives in `docs/` and applies to every topic. Fill in the topic-specific
+> content below.
+
+## 1. Main Question
+
+TODO: state the single question this topic must answer.
+
+## 2. Scope
+
+In scope:
+
+- TODO
+
+Out of scope:
+
+- TODO
+
+## 3. Core Hypotheses
+
+See `hypotheses.json` in this topic folder. Start with falsifiable statements
+and revise them as evidence arrives.
+
+## 4. Research Phases
+
+- Phase 1 — Map: define the landscape/categories for this topic.
+- Phase 2 — Anchor cases: pick the first entities/products to study.
+- Phase 3 — Taxonomy: classify the cases along the dimensions that matter here.
+- Phase 4 — Analysis: the quantitative or structural model for this topic.
+
+## 5. Search Seeds
+
+TODO: add daily/weekly/regional queries to this topic's registry entry.
+"""
+
+TOPIC_HYPOTHESES_TEMPLATE = [
+    {
+        "id": "H1",
+        "statement": "TODO: state a falsifiable hypothesis for this topic.",
+        "status": "active_hypothesis",
+        "confidence": "low",
+        "supporting_evidence_ids": [],
+        "weakening_evidence_ids": [],
+        "contradicting_evidence_ids": [],
+        "would_strengthen": [],
+        "would_weaken": [],
+        "would_contradict": [],
+    }
+]
+
+
+def new_research(args: argparse.Namespace) -> int:
+    slug = topics.slugify(args.slug or args.title)
+    registry = topics.load_registry()
+    exists = any(entry.get("id") == slug for entry in registry)
+    if exists and not args.force:
+        print(f"Topic already exists: {slug}", file=sys.stderr)
+        return 1
+    created = today_string(getattr(args, "date", None))
+    entry = {
+        "id": slug,
+        "title": args.title.strip(),
+        "status": "active",
+        "layout": "scoped",
+        "created_date": created,
+        "main_question": "TODO",
+        "scope_in": [],
+        "scope_out": [],
+        "search_queries": {"daily": [], "weekly": [], "regional": []},
+        "claim_types": [],
+        "freshness_overrides": {},
+        "hypothesis_ids": [item["id"] for item in TOPIC_HYPOTHESES_TEMPLATE],
+    }
+    registry = [existing for existing in registry if existing.get("id") != slug]
+    registry.append(entry)
+    topics.REGISTRY_PATH.parent.mkdir(parents=True, exist_ok=True)
+    topics.REGISTRY_PATH.write_text(
+        json.dumps(registry, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
+    )
+
+    ctx = topics.topic_context(slug, registry)
+    base = topics.TOPICS_DIR / slug
+    write_if_allowed(
+        base / "topic.json",
+        json.dumps(entry, indent=2, ensure_ascii=False) + "\n",
+        args.force,
+    )
+    write_if_allowed(
+        ctx.plan_path,
+        TOPIC_PLAN_TEMPLATE.format(title=entry["title"], slug=slug, created=created),
+        args.force,
+    )
+    write_if_allowed(
+        ctx.hypotheses_path,
+        json.dumps(TOPIC_HYPOTHESES_TEMPLATE, indent=2, ensure_ascii=False) + "\n",
+        args.force,
+    )
+    print(f"Created topic: {slug}")
+    print(f"Set it active with: use-topic {slug}")
+    return 0
+
+
+def show_topics(args: argparse.Namespace) -> int:
+    active = topics.resolve_active_slug(getattr(args, "topic", None))
+    for entry in topics.load_registry():
+        marker = "*" if entry.get("id") == active else " "
+        print(
+            f"{marker} {entry.get('id')} \u2014 {entry.get('title', '')} "
+            f"[{entry.get('status', '')}, {entry.get('layout', '')}]"
+        )
+    print()
+    print(f"Active topic: {active}")
+    return 0
+
+
+def use_topic(args: argparse.Namespace) -> int:
+    topics.set_active_slug(args.slug)
+    print(f"Active topic set to: {args.slug}")
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="aitoc-research",
@@ -1015,7 +1319,23 @@ def build_parser() -> argparse.ArgumentParser:
     )
     subparsers = parser.add_subparsers(dest="command", required=True)
 
-    plan = subparsers.add_parser("plan", help="Print the evolving master research plan.")
+    new_research_parser = subparsers.add_parser("new-research", help="Scaffold a new research topic.")
+    new_research_parser.add_argument("title")
+    new_research_parser.add_argument("--slug", help="Override the auto-generated topic slug.")
+    new_research_parser.add_argument("--date", help="Created date in YYYY-MM-DD format.")
+    new_research_parser.add_argument("--force", action="store_true")
+    new_research_parser.set_defaults(func=new_research)
+
+    topics_parser = subparsers.add_parser("topics", help="List research topics and show the active one.")
+    topics_parser.add_argument("--topic", help="Topic slug to treat as active for this call.")
+    topics_parser.set_defaults(func=show_topics)
+
+    use_topic_parser = subparsers.add_parser("use-topic", help="Set the active research topic.")
+    use_topic_parser.add_argument("slug")
+    use_topic_parser.set_defaults(func=use_topic)
+
+    plan = subparsers.add_parser("plan", help="Print the active topic's research plan.")
+    plan.add_argument("--topic", help="Topic slug. Defaults to the active topic.")
     plan.set_defaults(func=show_plan)
 
     new_case_parser = subparsers.add_parser("new-case", help="Create a new case-study stub.")
@@ -1025,11 +1345,13 @@ def build_parser() -> argparse.ArgumentParser:
 
     daily = subparsers.add_parser("daily-run", help="Create a dated daily trend-run note.")
     daily.add_argument("--date", help="Run date in YYYY-MM-DD format.")
+    daily.add_argument("--topic", help="Topic slug. Defaults to the active topic.")
     daily.add_argument("--force", action="store_true")
     daily.set_defaults(func=new_daily_run)
 
     weekly = subparsers.add_parser("weekly-run", help="Create a dated weekly trend-review note.")
     weekly.add_argument("--date", help="Run date in YYYY-MM-DD format.")
+    weekly.add_argument("--topic", help="Topic slug. Defaults to the active topic.")
     weekly.add_argument("--force", action="store_true")
     weekly.set_defaults(func=new_weekly_run)
 
@@ -1037,6 +1359,7 @@ def build_parser() -> argparse.ArgumentParser:
     signal.add_argument("title")
     signal.add_argument("--date", help="Signal date in YYYY-MM-DD format.")
     signal.add_argument("--score", type=int, default=1, choices=range(1, 6))
+    signal.add_argument("--topic", help="Topic slug. Defaults to the active topic.")
     signal.add_argument("--force", action="store_true")
     signal.set_defaults(func=new_trend_signal)
 
@@ -1044,12 +1367,14 @@ def build_parser() -> argparse.ArgumentParser:
     idea.add_argument("title")
     idea.add_argument("--date", help="Idea date in YYYY-MM-DD format.")
     idea.add_argument("--priority", choices=["low", "medium", "high"], default="medium")
+    idea.add_argument("--topic", help="Topic slug. Defaults to the active topic.")
     idea.add_argument("--force", action="store_true")
     idea.set_defaults(func=new_research_idea)
 
     memo = subparsers.add_parser("new-memo", help="Create a canonical source memo.")
     memo.add_argument("title")
     memo.add_argument("--date", help="Memo date in YYYY-MM-DD format.")
+    memo.add_argument("--topic", help="Topic slug. Defaults to the active topic.")
     memo.add_argument("--force", action="store_true")
     memo.set_defaults(func=new_memo)
 
@@ -1066,6 +1391,8 @@ def build_parser() -> argparse.ArgumentParser:
     publish_to_kindle = subparsers.add_parser("publish-kindle", help="Email a memo/export to your Kindle address.")
     publish_to_kindle.add_argument("source")
     publish_to_kindle.add_argument("--subject")
+    publish_to_kindle.add_argument("--date", help="Run date the publish belongs to (YYYY-MM-DD). Defaults to today.")
+    publish_to_kindle.add_argument("--topic", help="Topic slug. Defaults to the active topic.")
     publish_to_kindle.add_argument("--force-export", action="store_true")
     publish_to_kindle.set_defaults(func=publish_kindle)
 
@@ -1075,26 +1402,37 @@ def build_parser() -> argparse.ArgumentParser:
     publish_to_notion.add_argument("--page-id", help="Notion parent page ID. Overrides NOTION_PAGE_ID.")
     publish_to_notion.add_argument("--database-id", help="Notion parent database/data-source ID. Overrides NOTION_DATABASE_ID.")
     publish_to_notion.add_argument("--use-export", action="store_true", help="Publish the Notion export artifact instead of raw source Markdown.")
+    publish_to_notion.add_argument("--date", help="Run date the publish belongs to (YYYY-MM-DD). Defaults to today.")
+    publish_to_notion.add_argument("--topic", help="Topic slug. Defaults to the active topic.")
     publish_to_notion.set_defaults(func=publish_notion)
 
     connectors = subparsers.add_parser("connectors", help="Show configured source connectors and API dependencies.")
     connectors.set_defaults(func=show_connectors)
 
     hypotheses = subparsers.add_parser("hypotheses", help="Show active hypotheses and evidence counts.")
+    hypotheses.add_argument("--topic", help="Topic slug. Defaults to the active topic.")
     hypotheses.set_defaults(func=show_hypotheses)
 
     freshness = subparsers.add_parser("audit-freshness", help="Create a freshness audit for evidence notes.")
     freshness.add_argument("--date", help="Audit date in YYYY-MM-DD format.")
+    freshness.add_argument("--topic", help="Topic slug. Defaults to the active topic.")
     freshness.add_argument("--force", action="store_true")
     freshness.set_defaults(func=audit_freshness)
 
     falsification = subparsers.add_parser("audit-falsification", help="Create a falsification audit skeleton.")
     falsification.add_argument("--date", help="Audit date in YYYY-MM-DD format.")
+    falsification.add_argument("--topic", help="Topic slug. Defaults to the active topic.")
     falsification.add_argument("--force", action="store_true")
     falsification.set_defaults(func=new_falsification_audit)
 
     coverage = subparsers.add_parser("case-coverage", help="Show case backlog coverage and bias-control roles.")
     coverage.set_defaults(func=show_case_coverage)
+
+    verify = subparsers.add_parser("verify-run", help="Verify the end-to-end pipeline completed for a topic run.")
+    verify.add_argument("--date", help="Run date in YYYY-MM-DD format.")
+    verify.add_argument("--topic", help="Topic slug. Defaults to the active topic.")
+    verify.add_argument("--all", action="store_true", help="Verify every topic in the project (whole-project mode).")
+    verify.set_defaults(func=verify_run)
 
     evidence = subparsers.add_parser("validate-evidence", help="Validate an evidence note.")
     evidence.add_argument("path")
@@ -1113,10 +1451,11 @@ def build_parser() -> argparse.ArgumentParser:
     create_evidence_parser.add_argument("--published-date")
     create_evidence_parser.add_argument("--accessed-date")
     create_evidence_parser.add_argument("--claim", required=True)
-    create_evidence_parser.add_argument("--claim-type", required=True, choices=sorted(VALID_CLAIM_TYPES))
+    create_evidence_parser.add_argument("--claim-type", required=True)
     create_evidence_parser.add_argument("--confidence", required=True, choices=sorted(VALID_CONFIDENCE))
     create_evidence_parser.add_argument("--counterevidence")
     create_evidence_parser.add_argument("--research-implication", required=True)
+    create_evidence_parser.add_argument("--topic", help="Topic slug. Defaults to the active topic.")
     create_evidence_parser.add_argument("--force", action="store_true")
     create_evidence_parser.set_defaults(func=create_evidence)
 
@@ -1135,7 +1474,11 @@ def main(argv: list[str] | None = None) -> int:
     load_dotenv()
     parser = build_parser()
     args = parser.parse_args(argv)
-    return args.func(args)
+    try:
+        return args.func(args)
+    except TopicError as exc:
+        print(str(exc), file=sys.stderr)
+        return 1
 
 
 if __name__ == "__main__":

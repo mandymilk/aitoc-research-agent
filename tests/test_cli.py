@@ -17,6 +17,7 @@ from aitoc_research_agent.cli import (
     ROOT,
 )
 from aitoc_research_agent import __version__
+from aitoc_research_agent import topics
 from aitoc_research_agent.publishers.notion_api import markdown_to_notion_blocks
 
 
@@ -109,6 +110,181 @@ class CliTests(unittest.TestCase):
         self.assertIn("Export target: Notion", content)
         self.assertIn("reports/source/example.md", content)
         self.assertIn("# Example", content)
+
+
+class TopicLayerTests(unittest.TestCase):
+    def test_seed_registry_has_aitoc_as_legacy(self) -> None:
+        registry = topics.load_registry()
+        aitoc = topics.find_topic("aitoc", registry)
+        self.assertEqual(aitoc["layout"], "legacy")
+
+    def test_aitoc_context_uses_legacy_root_paths(self) -> None:
+        ctx = topics.topic_context("aitoc")
+        self.assertEqual(ctx.evidence_index_dir, topics.ROOT / "data" / "evidence_index")
+        self.assertEqual(ctx.plan_path, topics.ROOT / "docs" / "research_plan.md")
+        self.assertEqual(ctx.hypotheses_path, topics.ROOT / "hypotheses" / "registry.json")
+
+    def test_scoped_topic_context_is_self_contained(self) -> None:
+        registry = [
+            {"id": "evs", "title": "Electric Vehicles", "status": "active", "layout": "scoped"}
+        ]
+        ctx = topics.topic_context("evs", registry)
+        base = topics.TOPICS_DIR / "evs"
+        self.assertEqual(ctx.evidence_index_dir, base / "evidence_index")
+        self.assertEqual(ctx.plan_path, base / "research_plan.md")
+        self.assertEqual(ctx.daily_run_dir, base / "runs" / "daily")
+
+    def test_topic_extends_claim_types_and_overrides_freshness(self) -> None:
+        registry = [
+            {
+                "id": "evs",
+                "title": "EVs",
+                "status": "active",
+                "layout": "scoped",
+                "claim_types": ["battery_cost"],
+                "freshness_overrides": {"pricing": 1},
+            }
+        ]
+        ctx = topics.topic_context("evs", registry)
+        self.assertIn("battery_cost", ctx.claim_types)
+        self.assertIn("pricing", ctx.claim_types)
+        self.assertEqual(ctx.max_age_for("pricing"), 1)
+        self.assertEqual(ctx.max_age_for("battery_cost"), topics.DEFAULT_FRESHNESS_FALLBACK_DAYS)
+
+    def test_resolve_active_slug_precedence(self) -> None:
+        self.assertEqual(topics.resolve_active_slug("cli-topic", env={}), "cli-topic")
+        self.assertEqual(topics.resolve_active_slug(None, env={topics.ACTIVE_TOPIC_ENV: "env-topic"}), "env-topic")
+
+    def test_unknown_topic_raises(self) -> None:
+        with self.assertRaises(topics.TopicError):
+            topics.topic_context("does-not-exist", [])
+
+
+class VerifyRunTests(unittest.TestCase):
+    def _make_ctx(self, base):
+        from pathlib import Path
+
+        base = Path(base)
+        return topics.TopicContext(
+            slug="t",
+            title="T",
+            layout="scoped",
+            plan_path=base / "research_plan.md",
+            hypotheses_path=base / "hypotheses.json",
+            evidence_index_dir=base / "evidence_index",
+            product_profile_dir=base / "product_profiles",
+            daily_run_dir=base / "runs" / "daily",
+            weekly_run_dir=base / "runs" / "weekly",
+            signal_dir=base / "signals",
+            research_idea_dir=base / "research_ideas",
+            source_report_dir=base / "reports" / "source",
+            raw_dir=base / "raw",
+            case_dir=base / "case_studies",
+            freshness_dir=base / "audits" / "freshness",
+            falsification_dir=base / "audits" / "falsification",
+            publish_log_dir=base / "publish_log",
+            claim_types=set(topics.DEFAULT_CLAIM_TYPES),
+            freshness_by_claim_type=dict(topics.DEFAULT_FRESHNESS_BY_CLAIM_TYPE),
+        )
+
+    def _populate(self, ctx, run_date):
+        import json as _json
+
+        for directory in [
+            ctx.daily_run_dir,
+            ctx.evidence_index_dir,
+            ctx.freshness_dir,
+            ctx.falsification_dir,
+            ctx.source_report_dir,
+        ]:
+            directory.mkdir(parents=True, exist_ok=True)
+        (ctx.daily_run_dir / f"{run_date}.md").write_text("run", encoding="utf-8")
+        (ctx.evidence_index_dir / "e1.json").write_text("{}", encoding="utf-8")
+        ctx.hypotheses_path.write_text(_json.dumps([{"id": "H1"}]), encoding="utf-8")
+        (ctx.freshness_dir / f"{run_date}.md").write_text("fresh", encoding="utf-8")
+        (ctx.falsification_dir / f"{run_date}.md").write_text("fals", encoding="utf-8")
+        (ctx.source_report_dir / f"{run_date}-memo.md").write_text("# Memo", encoding="utf-8")
+
+    def test_complete_run_passes_when_publish_env_absent(self) -> None:
+        import os
+        import tempfile
+        from unittest import mock
+
+        from aitoc_research_agent.cli import verify_run_checks
+
+        cleared = {
+            "KINDLE_SMTP_HOST": "",
+            "KINDLE_SMTP_USERNAME": "",
+            "KINDLE_SMTP_PASSWORD": "",
+            "KINDLE_TO_EMAIL": "",
+            "NOTION_API_KEY": "",
+        }
+        with tempfile.TemporaryDirectory() as tmp, mock.patch.dict(os.environ, cleared, clear=False):
+            ctx = self._make_ctx(tmp)
+            self._populate(ctx, "2026-07-14")
+            checks = verify_run_checks(ctx, "2026-07-14")
+            failing = [c for c in checks if c["required"] and not c["ok"]]
+            self.assertEqual(failing, [])
+
+    def test_missing_evidence_fails(self) -> None:
+        import os
+        import tempfile
+        from unittest import mock
+
+        from aitoc_research_agent.cli import verify_run_checks
+
+        cleared = {"KINDLE_SMTP_HOST": "", "NOTION_API_KEY": ""}
+        with tempfile.TemporaryDirectory() as tmp, mock.patch.dict(os.environ, cleared, clear=False):
+            ctx = self._make_ctx(tmp)
+            self._populate(ctx, "2026-07-14")
+            for note in ctx.evidence_index_dir.glob("*.json"):
+                note.unlink()
+            checks = verify_run_checks(ctx, "2026-07-14")
+            evidence_check = next(c for c in checks if c["name"] == "evidence")
+            self.assertFalse(evidence_check["ok"])
+
+    def test_publish_required_when_env_configured(self) -> None:
+        import os
+        import tempfile
+        from unittest import mock
+
+        from aitoc_research_agent.cli import verify_run_checks
+
+        configured = {
+            "KINDLE_SMTP_HOST": "smtp.example.com",
+            "KINDLE_SMTP_USERNAME": "u",
+            "KINDLE_SMTP_PASSWORD": "p",
+            "KINDLE_TO_EMAIL": "k@example.com",
+            "NOTION_API_KEY": "secret",
+            "NOTION_PAGE_ID": "page",
+        }
+        with tempfile.TemporaryDirectory() as tmp, mock.patch.dict(os.environ, configured, clear=False):
+            ctx = self._make_ctx(tmp)
+            self._populate(ctx, "2026-07-14")
+            checks = verify_run_checks(ctx, "2026-07-14")
+            kindle = next(c for c in checks if c["name"] == "kindle_publish")
+            notion = next(c for c in checks if c["name"] == "notion_publish")
+            self.assertTrue(kindle["required"])
+            self.assertFalse(kindle["ok"])
+            self.assertTrue(notion["required"])
+            self.assertFalse(notion["ok"])
+
+    def test_topic_run_dates_and_latest(self) -> None:
+        import tempfile
+
+        from aitoc_research_agent.cli import latest_run_date, topic_run_dates
+
+        with tempfile.TemporaryDirectory() as tmp:
+            ctx = self._make_ctx(tmp)
+            self.assertEqual(topic_run_dates(ctx), [])
+            self.assertIsNone(latest_run_date(ctx))
+            ctx.daily_run_dir.mkdir(parents=True, exist_ok=True)
+            ctx.weekly_run_dir.mkdir(parents=True, exist_ok=True)
+            (ctx.daily_run_dir / "2026-07-10.md").write_text("a", encoding="utf-8")
+            (ctx.daily_run_dir / "2026-07-14.md").write_text("b", encoding="utf-8")
+            (ctx.weekly_run_dir / "2026-07-12.md").write_text("c", encoding="utf-8")
+            self.assertEqual(topic_run_dates(ctx), ["2026-07-10", "2026-07-12", "2026-07-14"])
+            self.assertEqual(latest_run_date(ctx), "2026-07-14")
 
 
 if __name__ == "__main__":

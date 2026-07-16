@@ -1,0 +1,15 @@
+{
+  "id": "evidence-2026-07-14-reuters-google-and-sea-ltd-agreed-to-develop-ai-tools-fo",
+  "topic_id": "sea-shopee-ai",
+  "source_url": "https://www.reuters.com/world/asia-pacific/google-shopee-owner-sea-develop-ai-tools-e-commerce-gaming-2026-02-19/",
+  "retrieval_method": "search",
+  "source_title": "Google, Shopee-owner Sea to develop AI tools for e-commerce, gaming",
+  "publisher": "Reuters",
+  "published_date": "2026-02-19",
+  "accessed_date": "2026-07-14",
+  "claim": "Google and Sea Ltd agreed to develop AI tools for e-commerce and gaming, including exploring the building of an AI agentic shopping prototype on Sea's e-commerce platform Shopee.",
+  "claim_type": "competition",
+  "confidence": "medium",
+  "counterevidence": "Full Reuters article could not be opened (HTTP 401); claim rests on the search-result snippet and should be reconfirmed against the primary article or a Google/Sea statement.",
+  "research_implication": "Indicates SEA is pursuing agentic shopping with more than one large AI partner (Google and OpenAI), suggesting platform-dependence rather than a self-owned agent."
+}

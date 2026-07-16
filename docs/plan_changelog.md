@@ -1,5 +1,14 @@
 # Plan Changelog
 
+## 2026-07-14: v0.7.0
+
+- Added the topic interests layer: research topics are now selectable, user-defined objects in `topics/registry.json` (schema `schemas/topic.schema.json`).
+- Kept the AI-to-C content as the first topic, `aitoc`, on the legacy root layout so existing files and tests are unchanged.
+- Added self-contained `topics/<slug>/` folders for new scoped topics.
+- Added `new-research`, `topics`, and `use-topic` commands, plus a `--topic` flag on the daily/weekly/signal/idea/evidence/hypotheses/audit commands.
+- Stamped evidence notes with `topic_id`; let topics extend claim types and override freshness windows.
+- Added decision record 0002 and Phase 0.10 to the research plan.
+
 ## 2026-06-09: v0.6.2
 
 - Added SMTP-based Kindle publishing through `publish-kindle`.
